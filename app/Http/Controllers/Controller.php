@@ -30,4 +30,39 @@ class Controller extends BaseController {
   public function er500($message, $status = 500) {
     return response()->json(["error" => $message], $status);
   }
+
+  public function sendNotification(array $firebaseToken, $title, $body) {
+    $serverAPIKey = env('FIREBASE_API_KEY', false);
+    if($serverAPIKey !== null || $serverAPIKey !== '') {
+
+      $data = json_encode([
+        "registration_ids"  => $firebaseToken,
+        "notification"      => [
+            "title"               => $title,
+            "body"                => $body,
+            "content_available"   => true,
+            "priority"            => "high"
+          ]
+        ]);
+
+        $headers = [
+          'Authorization: key=' . $serverAPIKey,
+          'Content-Type: application/json'
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_exec($ch);
+        curl_close ( $ch );
+
+        return true;
+    } else {
+      return false;
+    }
+  }
 }

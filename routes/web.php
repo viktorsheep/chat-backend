@@ -8,9 +8,18 @@ $router->get('/', function () use ($router) {
 });
 
 // File
+/*
 $router->group(['middleware' => 'auth'], function ($router) {
   $router->get('{file}', function ($file) {
     return response()->download($file);
+  });
+});
+*/
+
+// File
+$router->group(['prefix' => 'file'], function () use ($router) {
+  $router->get('{file}', function ($file) {
+      return response()->download($file);
   });
 });
 
@@ -20,7 +29,16 @@ $router->group(['prefix' => 'api'], function () use ($router) {
   $router->get('test', function () use ($router) {
     return "hello";
   });
-  
+
+  $router->group(['prefix' => 'file'], function () use ($router) {
+    $router->get('yo', function () use ($router) {
+      return 'hello';
+    });
+
+    $router->post('upload', 'MessageController@uploadAudio');
+    $router->delete('delete', 'MessageController@deleteAudio');
+  });
+
   // Middleware : Auth
   $router->group(['middleware' => 'auth'], function () use ($router) {
 
@@ -35,6 +53,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
       $router->get('view/{id}', 'UserController@view');
       $router->post('search', 'UserController@search');
       $router->delete('delete/{id}', 'UserController@delete');
+
+      $router->group(['prefix' => '{id}'], function($router) {
+        $router->put('update/firebase_token', 'UserController@updateFirebaseToken');
+      });
 
       // User Page
       $router->group(['prefix' => 'page'], function ($router) {
@@ -57,7 +79,20 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['prefix' => 'message'], function($router) {
       $router->get('browse/{fb_page_id}', 'MessageController@browse');
       $router->post('add/{page_id}', 'MessageController@add');
+
+      // Facebook Webhooks
+      $router->group(['prefix' => 'facebook'], function($router) {
+        $router->post('webhook', 'MessageController@receiveNotification');
+        $router->get('webhook', 'MessageController@verifyWebhook');
+      }); // e.o Facebook Webhooks
+
     }); // e.o Message
+
+    // Setting
+    $router->group(['prefix' => 'setting'], function ($router) {
+      $router->get('{name}/view', 'SettingController@viewByName');
+      $router->put('{name}/edit', 'SettingController@edit');
+    }); // e.o Setting
 
   }); // e.o Middleware : Auth
 

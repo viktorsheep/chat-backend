@@ -27,6 +27,8 @@ interface UserRepositoryInterface
   public function delete($data_id);
 
   public function exists($identifier, $identity);
+
+  public function updateFirebaseToken($id, $token);
   
   /*
   public function updateImage($id, $file);

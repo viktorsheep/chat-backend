@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\MessageRepositoryInterface;
+use App\Interfaces\SettingRepositoryInterface;
+use App\Models\FacebookNotificationLog;
 use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Support\Facades\File;
 
 class MessageController extends Controller {
-  protected $message;
+  protected $message, $settings;
 
-  public function __construct(MessageRepositoryInterface $message) 
-  {
+  public function __construct(
+    MessageRepositoryInterface $message,
+    SettingRepositoryInterface $settings
+  ) {
     $this->message = $message;
+    $this->settings = $settings;
   }
 
   public function browse($fb_page_id) {
@@ -74,6 +80,63 @@ class MessageController extends Controller {
 
     } catch(Exception $e) {
       return $this->er500($e->getMessage());
+    }
+  }
+
+  public function receiveNotification(Request $request) {
+    $firebaseToken = $this->settings->viewByName('firebase_token');
+
+    try {
+      // saving to log
+      $log = new FacebookNotificationLog;
+      $log->raw_value = json_encode($request->all());
+      $log->save();
+
+      $this->sendNotification($firebaseToken->value, 'Alert', 'Facebook Notification Received');
+      return response()->json();
+    } catch (Exception $e) {
+      $this->er500($e->getMessage());
+    }
+  }
+
+  public function verifyWebhook(Request $request) {
+    try {
+      // TODO: to change verify token value 'ChatTesting' to env
+      if($request->hub_verify_token === env('FACEBOOK_VERIFICATION_TOKEN', 'ChatTesting')) {
+        return response()->json($request->hub_challenge);
+      } else {
+        return response()->json('Error', 500);
+      }
+    } catch (Exception $e) {
+      $this->er500($e->getMessage());
+    }
+  }
+
+  public function uploadAudio(Request $request) {
+    $this->validate($request, [
+      'file' => 'required|max:50000'
+    ]);
+
+    $name = 'ac_' . uniqid() . '.wav';
+    $path = 'files' . DIRECTORY_SEPARATOR;
+    $request->file('file')->move($path, $name);
+    $file_name = $path . $name;
+
+    return response()->json(['file_name' => $file_name]);
+  }
+
+  public function deleteAudio(Request $request) {
+    $this->validate($request, [
+      'file_path' => 'required'
+    ]);
+
+    $file = public_path($request->file_path);
+
+    try {
+      File::delete($file);
+      return response()->json(['success' => true]);
+    } catch(Exception $e) {
+      $this->er500($e->getMessage());
     }
   }
 }

@@ -15,14 +15,16 @@ class FbPageController extends Controller
 
   public function add(Request $request) {
     $this->validate($request, [
-      'name'  => 'required',
-      'url'   => 'required',
+      'name'            => 'required',
+      'url'             => 'required',
       'contact_person'  => 'required',
-      'is_active'  => 'required|boolean'
+      'access_token'    => 'required',
+      'page_id'         => 'required',
+      'is_active'       => 'required|boolean'
     ]);
 
     $data =$request->only([
-      'name', 'url', 'contact_person', 'is_active', 'page_id'
+      'name', 'url', 'contact_person', 'access_token', 'is_active', 'page_id'
     ]);
 
     try {
@@ -63,6 +65,7 @@ class FbPageController extends Controller
       'url'             => 'required',
       'contact_person'  => 'required',
       'page_id'         => 'required',
+      'access_token'    => 'required',
       'is_active'       => 'required|boolean'
     ]);
 
@@ -70,6 +73,8 @@ class FbPageController extends Controller
       'name',
       'url',
       'contact_person',
+      'access_token',
+      'page_id',
       'is_active'
     ]);
 

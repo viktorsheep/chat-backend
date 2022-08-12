@@ -129,6 +129,17 @@ class UserController extends Controller
 
   }
 
+  public function updateFirebaseToken($id, Request $request) {
+    try {
+      return $this->successResponse(
+        $this->user->updateFirebaseToken($id, $request->firebase_token),
+        200
+      );
+    } catch(Exception $e) {
+        return $this->er500($e->getMessage(), 500);
+    }
+  }
+
   /*
   public function updateImage($id, Request $request)
   {

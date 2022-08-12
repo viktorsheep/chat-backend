@@ -49,5 +49,11 @@ class AppServiceProvider extends ServiceProvider
       'App\Interfaces\MessageRepositoryInterface',
       'App\Repositories\MessageRepository'
     );
+
+    // Settings
+    $this->app->bind(
+      'App\Interfaces\SettingRepositoryInterface',
+      'App\Repositories\SettingRepository'
+    );
   }
 }

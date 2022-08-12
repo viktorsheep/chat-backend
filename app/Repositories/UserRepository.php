@@ -72,6 +72,15 @@ class UserRepository implements UserRepositoryInterface
     return $user;
   }
 
+  public function updateFirebaseToken($id, $token)
+  {
+    $user = User::find($id);
+    $user->firebase_token = $token;
+    $user->save();
+    
+    return $user;
+  }
+
   public function confirm($id) {
     $user = User::where('id', '=', $id)->first();
     $user->is_confirmed = true;

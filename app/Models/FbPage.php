@@ -11,6 +11,7 @@ class FbPage extends Model
     'url',
     'contact_person',
     'page_id',
+    'access_token',
     'is_active',
     'created_by',
     'updated_by',
