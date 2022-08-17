@@ -18,6 +18,7 @@ class MessageController extends Controller {
   ) {
     $this->message = $message;
     $this->settings = $settings;
+    $this->token = env('FACEBOOK_VERIFICATION_TOKEN', 'ChatTesting');
   }
 
   public function browse($fb_page_id) {
@@ -102,11 +103,27 @@ class MessageController extends Controller {
   public function verifyWebhook(Request $request) {
     try {
       // TODO: to change verify token value 'ChatTesting' to env
+      /*
       if($request->hub_verify_token === env('FACEBOOK_VERIFICATION_TOKEN', 'ChatTesting')) {
         return response()->json($request->hub_challenge);
       } else {
         return response()->json('Error', 500);
       }
+      */
+
+      $log = new FacebookNotificationLog;
+      $log->raw_value = json_encode($request->all());
+      $log->save();
+
+      $mode  = $request->get('hub_mode');
+      $token = $request->get('hub_verify_token');
+
+      if ($mode === "subscribe" && $this->token and $token === $this->token) {
+        return response($request->get('hub_challenge'));
+      }
+
+      return response("Invalid token!", 400);
+
     } catch (Exception $e) {
       $this->er500($e->getMessage());
     }
