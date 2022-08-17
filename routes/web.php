@@ -39,6 +39,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->delete('delete', 'MessageController@deleteAudio');
   });
 
+  // Facebook Webhooks
+  $router->group(['prefix' => 'facebook'], function($router) {
+    $router->post('webhook', 'MessageController@receiveNotification');
+    $router->get('webhook', 'MessageController@verifyWebhook');
+  }); // e.o Facebook Webhooks
+
   // Middleware : Auth
   $router->group(['middleware' => 'auth'], function () use ($router) {
 
@@ -79,13 +85,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['prefix' => 'message'], function($router) {
       $router->get('browse/{fb_page_id}', 'MessageController@browse');
       $router->post('add/{page_id}', 'MessageController@add');
-
-      // Facebook Webhooks
-      $router->group(['prefix' => 'facebook'], function($router) {
-        $router->post('webhook', 'MessageController@receiveNotification');
-        $router->get('webhook', 'MessageController@verifyWebhook');
-      }); // e.o Facebook Webhooks
-
     }); // e.o Message
 
     // Setting
