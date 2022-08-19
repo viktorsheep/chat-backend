@@ -36,7 +36,7 @@ class UserRepository implements UserRepositoryInterface
       foreach ($data as $page) {
         $user->pages()->create([
           'user_id'     => $user->id,
-          'page_id'     => $page->id,
+          'page_id'     => $page,
           'is_joined'   => true,
           'joined_date' => Carbon::now(),
           'created_at'  => Carbon::now(),
