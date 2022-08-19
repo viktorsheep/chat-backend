@@ -50,7 +50,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     // Users
     $router->group(['prefix' => 'user'], function ($router) {
-      // $router->post('add', 'UserController@add');
+      $router->post('add', 'UserController@add');
       // $router->get('browse', 'UserController@browse');
       // $router->get('admins', 'UserController@admins');
       $router->get('users', 'UserController@users');
