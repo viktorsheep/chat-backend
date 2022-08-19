@@ -19,6 +19,7 @@ class UserRepository implements UserRepositoryInterface
     $user->save();
 
     // IDs -> regional admin 2 : courier 5 : township admin 6 
+    /*
     $role = $user->user_role_id;
     if($role === 2 || $role === 5 || $role === 6) {
       $user->adminDetail()->create([
@@ -28,6 +29,20 @@ class UserRepository implements UserRepositoryInterface
         'created_at' => Carbon::now(),
         'updated_at' => Carbon::now()
       ]);
+    }
+    */
+
+    if($data->exists('pages')) {
+      foreach ($data as $page) {
+        $user->pages()->create([
+          'user_id'     => $user->id,
+          'page_id'     => $page->id,
+          'is_joined'   => true,
+          'joined_date' => Carbon::now(),
+          'created_at'  => Carbon::now(),
+          'updated_at'  => Carbon::now()
+        ]);
+      }
     }
 
     return $user;
