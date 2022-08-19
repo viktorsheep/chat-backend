@@ -78,6 +78,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     public function pages() {
-        return $this->belongsToMany(FbPage::class, 'user_pages', 'user_id', 'page_id');
+        // return $this->belongsToMany(FbPage::class, 'user_pages', 'user_id', 'page_id');
+        return $this->hasManyThrough(FbPage::class, UserPage::class);
     }
 }
