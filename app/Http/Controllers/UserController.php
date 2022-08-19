@@ -25,8 +25,12 @@ class UserController extends Controller
   public function add(Request $request)
   {
     $this->validate($request, [
-      'email' => 'required|string|unique:users',
-      'password' => 'required|confirmed',
+      'name'          => 'required|string',
+      'email'         => 'required|string|unique:users',
+      'password'      => 'required|confirmed',
+      'is_active'     => 'required|boolean',
+      'is_confirmed'  => 'required|boolean',
+      'user_role_id'  => 'required|integer'
     ]);
 
     try {

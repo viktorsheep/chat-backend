@@ -11,10 +11,10 @@ class UserRepository implements UserRepositoryInterface
   public function add($data) {
     $user = new User;
     $user->name = $data['name'];
-    $user->phone = $data['phone'];
-    $user->address = $data['address'];
     $user->email = $data['email'];
     $user->password = app('hash')->make($data['password']);
+    $user->is_active = $data['is_active'];
+    $user->is_confirmed = $data['is_confirmed'];
     $user->user_role_id = $data['user_role_id'];
     $user->save();
 
@@ -72,8 +72,7 @@ class UserRepository implements UserRepositoryInterface
     return $user;
   }
 
-  public function updateFirebaseToken($id, $token)
-  {
+  public function updateFirebaseToken($id, $token) {
     $user = User::find($id);
     $user->firebase_token = $token;
     $user->save();
