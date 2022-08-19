@@ -32,7 +32,7 @@ class UserRepository implements UserRepositoryInterface
     }
     */
 
-    if($data->exists('pages')) {
+    if($data->has('pages')) {
       foreach ($data as $page) {
         $user->pages()->create([
           'user_id'     => $user->id,
