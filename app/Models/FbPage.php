@@ -31,6 +31,7 @@ class FbPage extends Model
   ];
 
   protected $columns = [
+    'id',
     'name',
     'url',
     'contact_person',
