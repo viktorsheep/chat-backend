@@ -30,9 +30,11 @@ class PageRepository implements PageRepositoryInterface {
     return $page;
   }
 
-  public function browse()
+  public function browse($with_token = false)
   {
-    return FbPage::get();
+    return $with_token === true
+      ? FbPage::get()
+      : FbPage::exclude(['access_token'])->get();
   }
 
   public function view($id)

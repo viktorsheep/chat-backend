@@ -29,6 +29,24 @@ class FbPage extends Model
     'updated_at'  => 'date: d M Y h:i A',
     'is_active'   => 'boolean'
   ];
+
+  protected $columns = [
+    'name',
+    'url',
+    'contact_person',
+    'page_id',
+    'access_token',
+    'is_active',
+    'created_by',
+    'updated_by',
+    'created_at',
+    'updated_at'
+  ];
+
+  public function scopeExclude($query, $value = []) 
+  {
+      return $query->select(array_diff($this->columns, (array) $value));
+  }
   
   public function creator() {
     return $this->belongsTo(User::class, 'created_by', 'id');

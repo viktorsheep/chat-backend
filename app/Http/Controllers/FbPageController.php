@@ -40,7 +40,7 @@ class FbPageController extends Controller
   public function browse(Request $request) {
     try {
       return $this->successResponse(
-        $this->page->browse(),
+        $this->page->browse($request->with_token === 'true' ? true : false),
         200
       );
     } catch(Exception $e) {

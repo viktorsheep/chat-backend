@@ -6,7 +6,7 @@ interface PageRepositoryInterface
 {
   public function save($id = null, $data);
 
-  public function browse();
+  public function browse($with_token = false);
 
   public function view($id);
 

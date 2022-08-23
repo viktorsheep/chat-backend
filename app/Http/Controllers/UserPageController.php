@@ -24,6 +24,17 @@ class UserPageController extends Controller {
     }
   }
 
+  public function get($user_id) {
+    try {
+      return $this->successResponse(
+        $this->userPage->get($user_id),
+        200
+      );
+    } catch(Exception $e) {
+      return $this->er500($e->getMessage());
+    }
+  }
+
   public function exists($page_id) {
     try {
       return $this->successResponse(

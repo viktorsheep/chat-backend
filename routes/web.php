@@ -68,6 +68,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
       $router->group(['prefix' => 'page'], function ($router) {
         $router->post('add/{page_id}', 'UserPageController@save');
         $router->put('edit/{page_id}', 'UserPageController@save');
+        $router->get('get/{user_id}', 'UserPageController@get');
         $router->get('exists/{page_id}', 'UserPageController@exists');
       });
 

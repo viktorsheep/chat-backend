@@ -38,6 +38,10 @@ class UserPageRepository implements UserPageRepositoryInterface {
     return $page;
   }
 
+  public function get($user_id) {
+    return UserPage::where('user_id', '=', $user_id)->get();
+  }
+
   public function exists($page_id) {
     $exists = UserPage
       ::where('user_id', '=', auth()->user()->id)
