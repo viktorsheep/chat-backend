@@ -86,18 +86,18 @@ class MessageController extends Controller {
 
   public function receiveNotification(Request $request) {
     $firebaseToken = $this->settings->viewByName('firebase_token');
+    $log = new FacebookNotificationLog;
 
     try {
       // saving to log
-      $log = new FacebookNotificationLog;
       $log->raw_value = json_encode($request->all());
-      $log->save();
-
       $this->sendNotification($firebaseToken->value, 'Alert', 'Facebook Notification Received');
       return response()->json();
     } catch (Exception $e) {
+      $log->raw_value = json_encode($e->getMessage());
       $this->er500($e->getMessage());
     }
+      $log->save();
   }
 
   public function verifyWebhook(Request $request) {
