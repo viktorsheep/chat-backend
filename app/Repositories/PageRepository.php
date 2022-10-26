@@ -37,9 +37,9 @@ class PageRepository implements PageRepositoryInterface {
       : FbPage::exclude(['access_token'])->get();
   }
 
-  public function view($id)
+  public function view($id, array $fields = null)
   {
-    return FbPage::find($id);
+    return $fields === null ? FbPage::find($id) : FbPage::find($id, $fields);
   }
 
   public function search($data)

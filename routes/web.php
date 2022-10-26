@@ -24,6 +24,7 @@ $router->group(['prefix' => 'file'], function () use ($router) {
 });
 
 // APIs
+
 $router->group(['prefix' => 'api'], function () use ($router) {
 
   $router->get('test', function () use ($router) {
@@ -66,10 +67,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
       // User Page
       $router->group(['prefix' => 'page'], function ($router) {
-        $router->post('add/{page_id}', 'UserPageController@save');
-        $router->put('edit/{page_id}', 'UserPageController@save');
+        $router->post('add/{page_id}[/{user_id}]', 'UserPageController@save');
+        $router->put('edit/{page_id}[/{user_id}]', 'UserPageController@save');
         $router->get('get/{user_id}', 'UserPageController@get');
         $router->get('exists/{page_id}', 'UserPageController@exists');
+        $router->delete('delete/{id}', 'UserPageController@delete');
       });
 
     }); // e.o Users
@@ -78,8 +80,17 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['prefix' => 'page'], function ($router) {
       $router->post('add', 'FbPageController@add');
       $router->get('browse', 'FbPageController@browse');
-      $router->get('{id}/view', 'FbPageController@view');
-      $router->put('{id}/edit', 'FbPageController@edit');
+
+      $router->group(['prefix' => '{id}'], function($router) {
+        $router->get('view', 'FbPageController@view');
+        $router->put('edit', 'FbPageController@edit');
+
+        // access_token
+        $router->group(['prefix' => 'access_token'], function($router) {
+          $router->get('get', 'FbPageController@getAccessToken');
+          $router->put('update', 'FbPageController@updateAccessToken');
+        });
+      });
     }); // e.o Fb Pages
 
     // Message

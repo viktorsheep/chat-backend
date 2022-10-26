@@ -8,7 +8,7 @@ interface PageRepositoryInterface
 
   public function browse($with_token = false);
 
-  public function view($id);
+  public function view($id, array $fields = null);
 
   public function search($data);
 

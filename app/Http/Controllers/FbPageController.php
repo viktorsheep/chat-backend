@@ -65,7 +65,6 @@ class FbPageController extends Controller
       'url'             => 'required',
       'contact_person'  => 'required',
       'page_id'         => 'required',
-      'access_token'    => 'required',
       'is_active'       => 'required|boolean'
     ]);
 
@@ -73,7 +72,6 @@ class FbPageController extends Controller
       'name',
       'url',
       'contact_person',
-      'access_token',
       'page_id',
       'is_active'
     ]);
@@ -82,6 +80,36 @@ class FbPageController extends Controller
       return $this->successResponse(
         $this->page->save($id, $data),
         201
+      );
+    } catch(Exception $e) {
+      return $this->er500($e->getMessage());
+    }
+  }
+
+  public function updateAccessToken($id, Request $request) {
+    $this->validate($request, [
+      'access_token'  => 'required'
+    ]);
+
+    $data = $request->only([
+      'access_token'
+    ]);
+
+    try {
+      return $this->successResponse(
+        $this->page->save($id, $data),
+        201
+      );
+    } catch(Exception $e) {
+      return $this->er500($e->getMessage());
+    }
+  }
+
+  public function getAccessToken($id) {
+    try {
+      return $this->successResponse(
+        $this->page->view($id, ['access_token']),
+        200
       );
     } catch(Exception $e) {
       return $this->er500($e->getMessage());

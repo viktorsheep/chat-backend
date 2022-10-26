@@ -102,15 +102,6 @@ class MessageController extends Controller {
 
   public function verifyWebhook(Request $request) {
     try {
-      // TODO: to change verify token value 'ChatTesting' to env
-      /*
-      if($request->hub_verify_token === env('FACEBOOK_VERIFICATION_TOKEN', 'ChatTesting')) {
-        return response()->json($request->hub_challenge);
-      } else {
-        return response()->json('Error', 500);
-      }
-      */
-
       $log = new FacebookNotificationLog;
       $log->raw_value = json_encode($request->all());
       $log->save();

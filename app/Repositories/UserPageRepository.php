@@ -5,12 +5,16 @@ namespace App\Repositories;
 use Carbon\Carbon;
 use App\Models\UserPage;
 use App\Interfaces\UserPageRepositoryInterface;
+use Exception;
 
 class UserPageRepository implements UserPageRepositoryInterface {
-  public function save($page_id) {
+  public function save($page_id, $user_id = null) {
+
+    $uid = $user_id === null ? auth()->user()->id : $user_id;
+
     $page = UserPage::firstOrNew([
       'page_id' => $page_id,
-      'user_id' => auth()->user()->id
+      'user_id' => $uid
     ]);
 
     if($page->exists) {
@@ -25,7 +29,7 @@ class UserPageRepository implements UserPageRepositoryInterface {
       $page->updated_at = Carbon::now();
 
     } else {
-      $page->user_id      = auth()->user()->id;
+      $page->user_id      = $uid;
       $page->page_id      = $page_id;
       $page->is_joined    = true;
       $page->joined_date  = Carbon::now();
@@ -63,5 +67,19 @@ class UserPageRepository implements UserPageRepositoryInterface {
     }
   
     return $response;
+  }
+
+  public function delete($id) {
+    $flag = true;
+    try {
+      UserPage::where('id', '=', $id)->delete();
+    } catch (Exception $e) {
+      $flag = [
+        'success' => false,
+        'ex' => $e->getMessage()
+      ];
+    }
+
+    return $flag;
   }
 }

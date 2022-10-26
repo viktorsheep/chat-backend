@@ -13,10 +13,10 @@ class UserPageController extends Controller {
     $this->userPage = $userPage;
   }
 
-  public function save($page_id) {
+  public function save($page_id, $user_id = null) {
     try {
       return $this->successResponse(
-        $this->userPage->save($page_id),
+        $this->userPage->save($page_id, $user_id),
         201
       );
     } catch(Exception $e) {
@@ -41,6 +41,15 @@ class UserPageController extends Controller {
         $this->userPage->exists($page_id),
         200
       );
+    } catch (Exception $e) {
+      return $this->er500($e->getMessage());
+    }
+  }
+
+  public function delete($id) {
+    try {
+      $this->userPage->delete($id);
+      return $this->successResponse("success", 204);
     } catch (Exception $e) {
       return $this->er500($e->getMessage());
     }

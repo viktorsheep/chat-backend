@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use App\Interfaces\UserRepositoryInterface;
 use Exception;
+use Illuminate\Validation\Rules\Exists;
 
 class UserController extends Controller
 {
@@ -100,6 +101,7 @@ class UserController extends Controller
       'password',
       'user_role_id'
     ]);
+
     
     try{
       $result = $this->user->edit($id, $data);
