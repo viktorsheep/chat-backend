@@ -106,6 +106,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         // Facebook Page api
         $router->group(['prefix' => '{page_id}'], function ($router) {
+            $router->get('attachments/{access_token}', 'FacebookController@attachments');
+            $router->get('messages/{access_token}', 'FacebookController@messages');
             $router->get('/', 'FacebookController@profile');
             $router->get('conversations/{access_token}', 'FacebookController@conversations');
         }); // e.o Facebook Page apis
