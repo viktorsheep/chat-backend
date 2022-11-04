@@ -1,4 +1,5 @@
 {
   "editor.tabSize": 2,
-  "intelephense.format.braces": "k&r"
+  "intelephense.format.braces": "k&r",
+  "nuxt.isNuxtApp": false
 }
