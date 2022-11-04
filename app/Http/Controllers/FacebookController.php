@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FbPage;
 use CURLFile;
 use Exception;
 use Illuminate\Http\Request;
@@ -15,23 +16,28 @@ class FacebookController extends Controller {
         return response()->json($response->object(), 200);
     }
 
-    public function conversations($page_id, $access_token) {
+    public function conversations($page_id) {
+        $page = FbPage::where('page_id', $page_id)->first();
 
-        $response = Http::get("https://graph.facebook.com/v15.0/$page_id/conversations?fields=unread_count,subject,snippet,senders,can_reply,message_count,updated_time,participants&access_token=$access_token");
-
-        return response()->json($response->object(), 200);
-    }
-
-    public function messages($page_id, $access_token) {
-
-        $response = Http::get("https://graph.facebook.com/v15.0/$page_id/messages?fields=id,created_time,message,from,to,tags&access_token=$access_token");
+        $response = Http::get("https://graph.facebook.com/v15.0/$page_id/conversations?fields=unread_count,subject,snippet,senders,can_reply,message_count,updated_time,participants&access_token=$page->access_token");
 
         return response()->json($response->object(), 200);
     }
 
-    public function attachments($page_id, $access_token) {
+    public function messages($page_id, $conversation_id) {
 
-        $response = Http::get("https://graph.facebook.com/v15.0/$page_id/attachments?fields=id,mime_type,name,size,file_url&access_token=$access_token");
+        $page = FbPage::where('page_id', $page_id)->first();
+
+        $response = Http::get("https://graph.facebook.com/v15.0/$conversation_id/messages?fields=id,created_time,message,from,to,tags&access_token=$page->access_token");
+
+        return response()->json($response->json(), 200);
+    }
+
+    public function attachments($page_id, $conversation_id) {
+
+        $page = FbPage::where('page_id', $page_id)->first();
+
+        $response = Http::get("https://graph.facebook.com/v15.0/$conversation_id/attachments?fields=id,mime_type,name,size,file_url&access_token=$page->access_token");
 
         return response()->json($response->object(), 200);
     }
