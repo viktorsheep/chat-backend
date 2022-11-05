@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Interfaces\MessageRepositoryInterface;
 use App\Interfaces\SettingRepositoryInterface;
 use App\Models\FacebookNotificationLog;
+use App\Models\FbPage;
+use App\Models\User;
+use App\Models\UserPage;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\File;
@@ -85,13 +88,19 @@ class MessageController extends Controller {
   }
 
   public function receiveNotification(Request $request) {
-    $firebaseToken = $this->settings->viewByName('firebase_token');
+    // $firebaseToken = $this->settings->viewByName('firebase_token');
     $log = new FacebookNotificationLog;
 
     try {
       // saving to log
-      $log->raw_value = json_encode($request->all());
-      $this->sendNotification($firebaseToken->value, 'Alert', 'Facebook Notification Received');
+      $page = FbPage::where('page_id', '=', $request->entry[0]['id'])->first();
+      $userPage = UserPage::where('page_id', '=', $page->id)->get();
+      $users = User::whereIn('id', $userPage->pluck('user_id'))->get();
+
+      $log->raw_value = json_encode($users);
+      $log->save();
+
+      $this->sendNotification($users->pluck('firebase_token'), 'Alert', 'Facebook Notification Received');
       return response()->json();
     } catch (Exception $e) {
       $log->raw_value = json_encode($e->getMessage());
