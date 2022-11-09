@@ -106,17 +106,13 @@ class MessageController extends Controller {
         }
     }
 
-    public function sendNoti() {
-        $this->noti(1);
-    }
-
     public function noti($page_id) {
         try {
             $response = new StreamedResponse(function () use ($page_id) {
                 while (true) {
                     $log = FacebookNotificationLog::where('page_id', $page_id)->orderBy('created_at', 'desc')->first();
-                    $data = $log === null ? '' : $log->raw_value;
-                    echo 'data: ' . json_encode($data) . "\n\n";
+                    $data = $log === null ? $page_id : $log->raw_value;
+                    echo 'data: ' . $data . "\n\n";
                     ob_flush();
                     flush();
                     usleep(5000000);
