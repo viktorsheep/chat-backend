@@ -102,8 +102,8 @@ class MessageController extends Controller {
         } catch (Exception $e) {
             $log->raw_value = json_encode($e->getMessage());
             $this->er500($e->getMessage());
+            $log->save();
         }
-        $log->save();
     }
 
     public function sendNoti() {
