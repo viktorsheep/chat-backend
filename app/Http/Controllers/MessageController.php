@@ -94,13 +94,9 @@ class MessageController extends Controller {
 
         try {
             // saving to log
-            $page = FbPage::where('page_id', '=', $request->entry[0]['id'])->first();
-            $userPage = UserPage::where('page_id', '=', $page->id)->get();
-            $users = User::whereIn('id', $userPage->pluck('user_id'))->get();
 
-            $log->raw_value = json_encode($users);
+            $log->raw_value = json_encode($request->all());
             $log->save();
-            // $this->sendNotification($users->pluck('firebase_token'), 'Alert', 'Facebook Notification Received');
             return response()->json();
         } catch (Exception $e) {
             $log->raw_value = json_encode($e->getMessage());
