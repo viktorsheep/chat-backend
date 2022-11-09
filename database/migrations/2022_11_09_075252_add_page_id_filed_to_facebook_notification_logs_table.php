@@ -4,17 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFacebookNotificationLogs extends Migration {
+class AddPageIdFiledToFacebookNotificationLogsTable extends Migration {
     /**
      * Run the migrations.
      *
      * @return void
      */
     public function up() {
-        Schema::create('facebook_notification_logs', function (Blueprint $table) {
-            $table->id();
-            $table->text('raw_value');
-            $table->timestamps();
+        Schema::table('facebook_notification_logs', function (Blueprint $table) {
+            $table->string('page_id')->nullable();
         });
     }
 
@@ -24,6 +22,8 @@ class CreateFacebookNotificationLogs extends Migration {
      * @return void
      */
     public function down() {
-        Schema::dropIfExists('facebook_notification_logs');
+        Schema::table('facebook_notification_logs', function (Blueprint $table) {
+            $table->dropColumn('page_id');
+        });
     }
 }
