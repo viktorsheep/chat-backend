@@ -94,6 +94,7 @@ class MessageController extends Controller {
 
         try {
             // saving to log
+            $log->page_id = $request->entry[0]['id'];
 
             $log->raw_value = json_encode($request->all());
             $log->save();
@@ -113,8 +114,8 @@ class MessageController extends Controller {
         try {
             $response = new StreamedResponse(function () use ($page_id) {
                 while (true) {
-                    $log = FacebookNotificationLog::where('raw_value', 'like', "%$page_id%")->orderBy('created_at', 'desc')->first();
-                    $data = $log === null ? $page_id : $log->raw_value;
+                    $log = FacebookNotificationLog::where('page_id', $page_id)->orderBy('created_at', 'desc')->first();
+                    $data = $log === null ? '' : $log->raw_value;
                     echo 'data: ' . json_encode($data) . "\n\n";
                     ob_flush();
                     flush();
