@@ -28,8 +28,6 @@ $router->group(['prefix' => 'file'], function () use ($router) {
 $router->group(['prefix' => 'api'], function () use ($router) {
 
     $router->get('/noti/{page_id}', 'MessageController@noti');
-    $router->get('/send-noti', 'MessageController@sendNoti');
-
 
     $router->get('test', function () use ($router) {
         return "hello";
