@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Interfaces\MessageRepositoryInterface;
 use App\Interfaces\SettingRepositoryInterface;
 use App\Models\FacebookNotificationLog;
-use App\Models\FbPage;
-use App\Models\User;
-use App\Models\UserPage;
 use Illuminate\Http\Request;
 use Exception;
-use Illuminate\Support\Facades\File;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\File;
+
 
 class MessageController extends Controller {
     protected $message, $settings;
@@ -35,6 +34,25 @@ class MessageController extends Controller {
             );
         } catch (Exception $e) {
             $this->er500($e->getMessage());
+        }
+    }
+
+    public function getAudio(Request $req)
+    {
+        try {
+            $response = Http::sink(base_path('public') . DIRECTORY_SEPARATOR . 'asdf.webm')
+                        ->withHeaders(['Content-Type' => 'audio/webm'])
+                        ->get($req->url);
+            try {
+                $af = file_get_contents(base_path('public'). DIRECTORY_SEPARATOR . 'asdf.webm');
+                $cv = base64_encode($af);
+            } catch(Exception $e) {
+                return response()->json(['err' => $e->getMessage()], 500);
+            }
+
+            return response()->json(['blob' => $cv], 200);
+        } catch (Exception $e) {
+            return response()->json($e, 500);
         }
     }
 

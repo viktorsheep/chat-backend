@@ -29,6 +29,8 @@ $app->withFacades(
 );
 $app->withEloquent();
 
+$app->instance('path.storage', app()->basePath() . DIRECTORY_SEPARATOR . 'storage');
+
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings
@@ -82,6 +84,7 @@ $app->middleware([
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class
 ]);
+
 
 /*
 |--------------------------------------------------------------------------

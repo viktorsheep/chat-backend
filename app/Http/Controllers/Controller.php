@@ -8,7 +8,7 @@ use Exception;
 class Controller extends BaseController {
   public function successResponse($data = null, $status = 200) {
     return $data === null ? response('', 204)
-      : response()->json( $data ,$status);
+      : response()->json($data, $status);
   }
 
   public function errorResponse(Exception $e, $status = 500) {
@@ -33,34 +33,34 @@ class Controller extends BaseController {
 
   public function sendNotification(array $firebaseToken, $title, $body) {
     $serverAPIKey = env('FIREBASE_API_KEY', false);
-    if($serverAPIKey !== null || $serverAPIKey !== '') {
+    if ($serverAPIKey !== null || $serverAPIKey !== '') {
 
       $data = json_encode([
         "registration_ids"  => $firebaseToken,
         "notification"      => [
-            "title"               => $title,
-            "body"                => $body,
-            "content_available"   => true,
-            "priority"            => "high"
-          ]
-        ]);
+          "title"               => $title,
+          "body"                => $body,
+          "content_available"   => true,
+          "priority"            => "high"
+        ]
+      ]);
 
-        $headers = [
-          'Authorization: key=' . $serverAPIKey,
-          'Content-Type: application/json'
-        ];
+      $headers = [
+        'Authorization: key=' . $serverAPIKey,
+        'Content-Type: application/json'
+      ];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_exec($ch);
-        curl_close ( $ch );
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+      curl_setopt($ch, CURLOPT_POST, true);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+      curl_exec($ch);
+      curl_close($ch);
 
-        return true;
+      return true;
     } else {
       return false;
     }
