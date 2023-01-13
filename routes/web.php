@@ -97,6 +97,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         // Message
         $router->group(['prefix' => 'message'], function ($router) {
             $router->get('browse/{fb_page_id}', 'MessageController@browse');
+            $router->post('get-audio', 'MessageController@getAudio');
             $router->post('add/{page_id}', 'MessageController@add');
         }); // e.o Message
 
