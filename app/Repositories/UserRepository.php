@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Repositories;
+
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\UserRole;
 use App\Interfaces\UserRepositoryInterface;
 
-class UserRepository implements UserRepositoryInterface
-{
+class UserRepository implements UserRepositoryInterface {
   public function add($data) {
     $user = new User;
     $user->name = $data['name'];
@@ -32,7 +32,7 @@ class UserRepository implements UserRepositoryInterface
     }
     */
 
-    if($data->has('pages')) {
+    if ($data->has('pages')) {
       foreach ($data['pages'] as $page) {
         $user->user_pages()->create([
           'user_id'     => $user->id,
@@ -57,11 +57,11 @@ class UserRepository implements UserRepositoryInterface
   }
 
   public function admins() {
-    return User::where('user_role_id', '=', 2)->with(['adminDetail.region'])->get();
+    return User::where('user_role_id', '=', 2)->get();
   }
 
   public function users() {
-    return User::where('user_role_id', '=', 3)->get();
+    return User::where('user_role_id', '!=', 1)->get();
   }
 
   public function view($data_id) {
@@ -70,14 +70,14 @@ class UserRepository implements UserRepositoryInterface
 
   public function edit($id, $data) {
     $user = User::where('id', '=', $id)
-              // ->with('addresses', 'addresses.region', 'addresses.township', 'addresses.ward')
-              ->first();
+      // ->with('addresses', 'addresses.region', 'addresses.township', 'addresses.ward')
+      ->first();
 
     $user->name   = $data['name'];
     $user->phone  = $data['phone'];
     $user->email  = $data['email'];
 
-    if(isset($data['password'])) {
+    if (isset($data['password'])) {
       $user->password   = app('hash')->make($data['password']);
     }
 
@@ -91,7 +91,7 @@ class UserRepository implements UserRepositoryInterface
     $user = User::find($id);
     $user->firebase_token = $token;
     $user->save();
-    
+
     return $user;
   }
 
