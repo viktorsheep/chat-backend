@@ -61,7 +61,7 @@ class UserRepository implements UserRepositoryInterface {
   }
 
   public function users() {
-    return User::where('user_role_id', '!=', 1)->get();
+    return User::where('user_role_id', '!=', 1)->with(['role'])->get();
   }
 
   public function view($data_id) {
