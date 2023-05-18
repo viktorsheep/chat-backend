@@ -37,22 +37,21 @@ class MessageController extends Controller {
         }
     }
 
-    public function getAudio(Request $req)
-    {
+    public function getAudio(Request $req) {
         try {
             $response = Http::sink(base_path('public') . DIRECTORY_SEPARATOR . 'asdf.webm')
-                        ->withHeaders(['Content-Type' => 'audio/webm'])
-                        ->get($req->url);
+                ->withHeaders(['Content-Type' => 'audio/webm'])
+                ->get($req->url);
             try {
-                $af = file_get_contents(base_path('public'). DIRECTORY_SEPARATOR . 'asdf.webm');
+                $af = file_get_contents(base_path('public') . DIRECTORY_SEPARATOR . 'asdf.webm');
                 $cv = base64_encode($af);
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 return response()->json(['err' => $e->getMessage()], 500);
             }
 
             return response()->json(['blob' => $cv], 200);
         } catch (Exception $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 

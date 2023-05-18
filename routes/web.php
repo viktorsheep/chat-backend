@@ -48,6 +48,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('webhook', 'MessageController@verifyWebhook');
     }); // e.o Facebook Webhooks
 
+    // Set Client
+    $router->group(['prefix' => 'client'], function ($router) {
+        $router->post('set', 'ClientController@set');
+        $router->get('{sender_id}/get', 'ClientController@getBySenderId');
+    }); // e.o Set Client
+
     // Middleware : Auth
     $router->group(['middleware' => 'auth'], function () use ($router) {
 
