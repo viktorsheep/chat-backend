@@ -49,8 +49,22 @@ class FacebookController extends Controller {
         $message = $req->message;
         $access_token = $req->access_token;
 
+        // $response = Http::post(
+        //     "https://graph.facebook.com/v15.0/me/messages?recipient={id:$recipient_id}&messaging_type=RESPONSE&message={'text':'$message','tag':'HUMAN_AGENT'}&access_token=$access_token"
+        // );
+
         $response = Http::post(
-            "https://graph.facebook.com/v15.0/me/messages?recipient={id:$recipient_id}&messaging_type=RESPONSE&message={'text':'$message'}&access_token=$access_token"
+            "https://graph.facebook.com/v15.0/me/messages?access_token=$access_token",
+            [
+                'recipient' => [
+                    'id' => $recipient_id,
+                ],
+                'message' => [
+                    'text' => $message,
+                ],
+                'tag' => 'HUMAN_AGENT',
+                'messaging_type' => 'MESSAGE_TAG',
+            ]
         );
 
         return response()->json([
