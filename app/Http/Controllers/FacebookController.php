@@ -90,7 +90,9 @@ class FacebookController extends Controller {
                         'payload' => ['is_reusable' => false]
                     ]
                 ]),
-                'filedata' => new CURLFile($request->file('filedata'), 'audio/webm')
+                'filedata' => new CURLFile($request->file('filedata'), 'audio/webm'),
+                'tag' => 'POST_PURCHASE_UPDATE',
+                'messaging_type' => 'MESSAGE_TAG',
             ]);
             $response = curl_exec($ch);
 
