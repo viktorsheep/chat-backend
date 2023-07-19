@@ -62,7 +62,7 @@ class FacebookController extends Controller {
                 'message' => [
                     'text' => $message,
                 ],
-                'tag' => 'HUMAN_AGENT',
+                'tag' => 'POST_PURCHASE_UPDATE',
                 'messaging_type' => 'MESSAGE_TAG',
             ]
         );
