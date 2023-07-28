@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FbPage;
 use App\Models\Message;
+use Carbon\Carbon;
 use CURLFile;
 use Exception;
 use Illuminate\Http\Request;
@@ -48,52 +49,117 @@ class FacebookController extends Controller {
         $recipient_id = $req->recipient_id;
         $message = $req->message;
         $access_token = $req->access_token;
+        $last_date = $req->last_date;
+
+        $lastDateCarbon = Carbon::parse($last_date);
+
+        $currentDate = Carbon::now();
 
         // $response = Http::post(
         //     "https://graph.facebook.com/v15.0/me/messages?recipient={id:$recipient_id}&messaging_type=RESPONSE&message={'text':'$message','tag':'HUMAN_AGENT'}&access_token=$access_token"
         // );
+        $tag = '';
 
-        $response = Http::post(
-            "https://graph.facebook.com/v15.0/me/messages?access_token=$access_token",
-            [
-                'recipient' => [
-                    'id' => $recipient_id,
-                ],
-                'message' => [
-                    'text' => $message,
-                ],
-                'tag' => 'POST_PURCHASE_UPDATE',
-                'messaging_type' => 'MESSAGE_TAG',
-            ]
-        );
+        if ($lastDateCarbon->diffInHours($currentDate) < 24) {
+            Http::post(
+                "https://graph.facebook.com/v15.0/me/messages?recipient={id:$recipient_id}&messaging_type=RESPONSE&message={'text':'$message'}&access_token=$access_token"
+            );
+            $tag = 'none';
+        } elseif ($lastDateCarbon->diffInDays($currentDate) < 7) {
+            Http::post(
+                "https://graph.facebook.com/v15.0/me/messages?access_token=$access_token",
+                [
+                    'recipient' => [
+                        'id' => $recipient_id,
+                    ],
+                    'message' => [
+                        'text' => $message,
+                    ],
+                    'tag' => 'HUMAN_AGENT',
+                    'messaging_type' => 'MESSAGE_TAG',
+                ]
+            );
+            $tag = 'HUMAN_AGENT';
+        } else {
+            Http::post(
+                "https://graph.facebook.com/v15.0/me/messages?access_token=$access_token",
+                [
+                    'recipient' => [
+                        'id' => $recipient_id,
+                    ],
+                    'message' => [
+                        'text' => $message,
+                    ],
+                    'tag' => 'POST_PURCHASE_UPDATE',
+                    'messaging_type' => 'MESSAGE_TAG',
+                ]
+            );
+            $tag = 'POST_PURCHASE_UPDATE';
+        }
+
 
         return response()->json([
-            'api_response' => $response->object(),
-            'recipient_id' => $recipient_id,
             'message' => $message,
-            'token' => $access_token
+            'tag' => $tag
         ], 200);
     }
 
     public function sendVoice(Request $request) {
         try {
+            $last_date = $request->last_date;
+            $lastDateCarbon = Carbon::parse($last_date);
+            $currentDate = Carbon::now();
+
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, "https://graph.facebook.com/v15.0/me/messages?access_token=$request->access_token");
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type' => 'multipart/form-data']);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, [
-                'recipient' => $request->recipient,
-                'message' => json_encode([
-                    'attachment' => [
-                        'type' => 'audio',
-                        'payload' => ['is_reusable' => false]
-                    ]
-                ]),
-                'filedata' => new CURLFile($request->file('filedata'), 'audio/webm'),
-                'tag' => 'POST_PURCHASE_UPDATE',
-                'messaging_type' => 'MESSAGE_TAG',
-            ]);
+
+            if ($lastDateCarbon->diffInHours($currentDate) < 24) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                    'recipient' => $request->recipient,
+                    'message' => json_encode([
+                        'attachment' => [
+                            'type' => 'audio',
+                            'payload' => ['is_reusable' => false]
+                        ]
+                    ]),
+                    'filedata' => new CURLFile($request->file('filedata'), 'audio/webm')
+                ]);
+                $tag = 'none';
+            } elseif ($lastDateCarbon->diffInDays($currentDate) < 7) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                    'recipient' => $request->recipient,
+                    'message' => json_encode([
+                        'attachment' => [
+                            'type' => 'audio',
+                            'payload' => ['is_reusable' => false]
+                        ]
+                    ]),
+                    'filedata' => new CURLFile($request->file('filedata'), 'audio/webm'),
+                    'tag' => 'HUMAN_AGENT',
+                    'messaging_type' => 'MESSAGE_TAG',
+                ]);
+                $tag = 'HUMAN_AGENT';
+            } else {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                    'recipient' => $request->recipient,
+                    'message' => json_encode([
+                        'attachment' => [
+                            'type' => 'audio',
+                            'payload' => ['is_reusable' => false]
+                        ]
+                    ]),
+                    'filedata' => new CURLFile($request->file('filedata'), 'audio/webm'),
+                    'tag' => 'POST_PURCHASE_UPDATE',
+                    'messaging_type' => 'MESSAGE_TAG',
+                ]);
+                $tag = 'POST_PURCHASE_UPDATE';
+            }
+
+
+
             $response = curl_exec($ch);
 
             if (curl_errno($ch)) {
@@ -101,12 +167,9 @@ class FacebookController extends Controller {
             }
             curl_close($ch);
 
-            // $test = $this->handOver($request);
-
             return response()->json([
                 'FB api response' => $response,
-                // 'Recipient ID' => $test,
-                'token' => $request->access_token
+                'tag' => $tag
             ], 200);
         } catch (Exception $e) {
             return response($e, 500);
