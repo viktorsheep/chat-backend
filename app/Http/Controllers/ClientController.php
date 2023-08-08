@@ -30,9 +30,9 @@ class ClientController extends Controller {
     } // e.o set
 
     // get by sender id
-    public function getBySenderId($sender_id) {
+    public function getBySenderId($sender_id, $page_id) {
         try {
-            return response()->json(Client::where('psid', $sender_id)->first(), 200);
+            return response()->json(Client::where('psid', $sender_id)->where('page_id', $page_id)->first(), 200);
         } catch (Exception $e) {
             return response()->json($e, 500);
         }
