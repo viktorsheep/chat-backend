@@ -51,7 +51,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     // Set Client
     $router->group(['prefix' => 'client'], function ($router) {
         $router->post('set', 'ClientController@set');
-        $router->get('{sender_id}/get', 'ClientController@getBySenderId');
+        $router->get('{sender_id}/{page_id}/get', 'ClientController@getBySenderId');
     }); // e.o Set Client
 
     // Middleware : Auth
