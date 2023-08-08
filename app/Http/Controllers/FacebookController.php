@@ -21,10 +21,32 @@ class FacebookController extends Controller {
 
     public function conversations($page_id) {
         $page = FbPage::where('page_id', $page_id)->first();
+        $accessToken = $page->access_token;
+        $limit = 25;
 
-        $response = Http::get("https://graph.facebook.com/v15.0/$page_id/conversations?fields=unread_count,subject,snippet,senders,can_reply,message_count,updated_time,participants&access_token=$page->access_token");
+        $url = "https://graph.facebook.com/v15.0/{$page_id}/conversations";
+        $conversations = [];
 
-        return response()->json($response->object(), 200);
+        do {
+            $response = Http::get($url, [
+                'access_token' => $accessToken,
+                'limit' => $limit,
+                'fields' => 'unread_count,subject,snippet,senders,can_reply,message_count,updated_time,participants'
+            ]);
+
+            $data = $response->json();
+            $conversations = array_merge($conversations, $data['data']);
+
+            $paging = $data['paging'] ?? null;
+            $url = $paging['next'] ?? null;
+        } while ($url);
+
+
+        // $response = Http::get("https://graph.facebook.com/v15.0/$page_id/conversations?fields=unread_count,subject,snippet,senders,can_reply,message_count,updated_time,participants&access_token=$page->access_token");
+
+        // return response()->json($response->object(), 200);
+
+        return response()->json($conversations, 200);
     }
 
     public function messages($page_id, $conversation_id) {
