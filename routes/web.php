@@ -118,6 +118,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->group(['prefix' => '{conversation_id}'], function ($router) {
                 $router->get('attachments', 'FacebookController@attachments');
                 $router->get('messages', 'FacebookController@messages');
+                $router->get('conversation', 'FacebookController@conversation');
             });
             $router->get('/', 'FacebookController@profile');
             $router->get('conversations', 'FacebookController@conversations');
