@@ -58,13 +58,37 @@ class FacebookController extends Controller {
         return response()->json(['conversations' => $conversations, 'next' => $next], 200);
     }
 
-    public function messages($page_id, $conversation_id) {
+    public function messages($page_id, $conversation_id, Request $request) {
 
         $page = FbPage::where('page_id', $page_id)->first();
+        $limit = 25;
+        $getNext = $request->query('next');
 
-        $response = Http::get("https://graph.facebook.com/v15.0/$conversation_id/messages?fields=id,created_time,message,from,to,tags&access_token=$page->access_token");
+        $url = "https://graph.facebook.com/v15.0/{$conversation_id}/messages?fields=";
 
-        return response()->json($response->json(), 200);
+        if ($getNext) {
+            $response = Http::get($url, [
+                'access_token' => $page->access_token,
+                'limit' => $limit,
+                'fields' => 'id,created_time,message,from,to,tags',
+                'after' => $getNext
+            ]);
+        } else {
+            $response = Http::get("https://graph.facebook.com/v15.0/$conversation_id/messages?fields=id,created_time,message,from,to,tags&access_token=$page->access_token");
+        }
+
+        $data = $response->json();
+        $messages =  $data['data'];
+
+        $paging = $data['paging'] ?? null;
+        $url = $paging['next'] ?? null;
+
+        $next = null;
+        if ($url) {
+            $next = $paging['cursors']['after'];
+        }
+
+        return response()->json(['messages' => $messages, 'next' => $next], 200);
     }
 
     public function conversation($page_id, $conversation_id) {
