@@ -104,7 +104,7 @@ class FacebookController extends Controller {
 
         $page = FbPage::where('page_id', $page_id)->first();
 
-        $response = Http::get("https://graph.facebook.com/v15.0/$conversation_id/attachments?fields=id,mime_type,name,size,file_url&access_token=$page->access_token");
+        $response = Http::get("https://graph.facebook.com/v15.0/$conversation_id/attachments?fields=id,mime_type,name,size,file_url,image_data&access_token=$page->access_token");
 
         return response()->json($response->object(), 200);
     }
