@@ -51,8 +51,16 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     // Set Client
     $router->group(['prefix' => 'client'], function ($router) {
         $router->post('set', 'ClientController@set');
+        $router->put('{id}/{status_id}/set', 'ClientController@setStatus');
+        $router->put('{id}/{responder_id}/set', 'ClientController@setResponder');
         $router->get('{sender_id}/{page_id}/get', 'ClientController@getBySenderId');
     }); // e.o Set Client
+
+    // Client Status
+    $router->group(['prefix' => 'client-status'], function ($router) {
+        $router->get('all', 'ClientStatusController@getClientStatus');
+        $router->get('{id}/get', 'ClientStatusController@getById');
+    });
 
     // Middleware : Auth
     $router->group(['middleware' => 'auth'], function () use ($router) {
