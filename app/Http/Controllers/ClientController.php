@@ -54,6 +54,26 @@ class ClientController extends Controller {
         }
     } // e.o set
 
+    // set status
+    public function setStatus($id, $status_id) {
+        $client = Client::where('id', $id)->first();
+
+        $client->status = $status_id;
+        $client->update();
+
+        return response()->json($client, 200);
+    }
+
+    // set responder
+    public function setResponder($id, $responder_id) {
+        $client = Client::where('id', $id)->first();
+
+        $client->responder_id = $responder_id;
+        $client->update();
+
+        return response()->json($client, 200);
+    }
+
     // get by sender id
     public function getBySenderId($sender_id, $page_id) {
         try {
