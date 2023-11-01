@@ -12,5 +12,15 @@ class Client extends Model {
         'page_index_id',
         'mid',
         'psid',
+        'responder_id',
+        'status'
     ];
+
+    public function responder() {
+        return $this->belongsTo(User::class, 'responder_id', 'id');
+    }
+
+    public function status() {
+        return $this->belongsTo(ClientStatus::class, 'status', 'id');
+    }
 }
