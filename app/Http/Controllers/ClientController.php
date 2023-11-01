@@ -65,13 +65,23 @@ class ClientController extends Controller {
     }
 
     // set responder
-    public function setResponder($id, $responder_id) {
-        $client = Client::where('id', $id)->first();
+    public function setResponder($client_psid, $responder_id) {
+        $client = Client::where('psid', $client_psid)->first();
 
         $client->responder_id = $responder_id;
         $client->update();
 
         return response()->json($client, 200);
+    }
+
+    // get data
+    public function getData($client_mid) {
+        try {
+            $client = Client::where('mid', $client_mid)->with('responder', 'status')->first();
+            return response()->json($client, 200);
+        } catch (Exception $e) {
+            return response()->json($e, 500);
+        }
     }
 
     // get by sender id
