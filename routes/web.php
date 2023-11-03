@@ -53,6 +53,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('set', 'ClientController@set');
         $router->put('{client_mid}/{status_id}/set-status', 'ClientController@setStatus');
         $router->put('{client_psid}/{responder_id}/set-responder', 'ClientController@setResponder');
+        $router->put('{client_mid}/read-message', 'ClientController@readMessage');
         $router->get('{client_mid}/getData', 'ClientController@getData');
         $router->get('{client_mid}/getClient', 'ClientController@getClient');
         $router->get('{sender_id}/{page_id}/get', 'ClientController@getBySenderId');

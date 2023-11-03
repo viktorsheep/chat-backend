@@ -14,7 +14,8 @@ class Client extends Model {
         'psid',
         'responder_id',
         'status',
-        'name'
+        'name',
+        'has_new_message'
     ];
 
     public function responder() {

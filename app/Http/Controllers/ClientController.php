@@ -76,6 +76,16 @@ class ClientController extends Controller {
         return response()->json(Client::where('psid', $client_psid)->with('responder', 'client_status')->first(), 200);
     }
 
+    // read message
+    public function readMessage($client_mid) {
+        $client = Client::where('mid', $client_mid)->first();
+
+        $client->has_new_message = false;
+        $client->update();
+
+        return response()->json(Client::where('mid', $client_mid)->with('responder', 'client_status')->first(), 200);
+    }
+
     // get data
     public function getData($client_mid, Request $request) {
         try {
@@ -85,22 +95,23 @@ class ClientController extends Controller {
                 $client->name = $request->name;
                 $client->update();
             }
-            $unread = 'no';
             if ($client->additional_information !== $request->info) {
 
                 if ($client->additional_information !== null) {
                     $stored = json_decode($client->additional_information);
                     $new = json_decode($request->info);
-                    $unread = $stored->snippet === $new->snippet ?  'no' : 'yes';
+                    if ($stored->snippet !== $new->snippet) {
+                        $client->has_new_message = true;
+                    }
                 }
                 $client->additional_information = $request->info;
                 $client->update();
             }
 
-            return response()->json([
-                'client' => Client::where('mid', $client_mid)->with('responder', 'client_status')->first(),
-                'unread' => $unread
-            ], 200);
+            return response()->json(
+                Client::where('mid', $client_mid)->with('responder', 'client_status')->first(),
+                200
+            );
         } catch (Exception $e) {
             return response()->json($e, 500);
         }
