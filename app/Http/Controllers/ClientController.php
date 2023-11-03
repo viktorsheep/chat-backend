@@ -55,12 +55,12 @@ class ClientController extends Controller {
     // set status
     public function setStatus($client_mid, $status_id) {
         try {
-            $client = Client::where('mid', $client_mid)->with('responder', 'status')->first();
+            $client = Client::where('mid', $client_mid)->first();
 
             $client->status = $status_id;
             $client->update();
 
-            return response()->json($client, 200);
+            return response()->json(Client::where('mid', $client_mid)->with('responder', 'client_status')->first(), 200);
         } catch (\Exception $e) {
             return response()->json($e, 500);
         }
@@ -68,18 +68,18 @@ class ClientController extends Controller {
 
     // set responder
     public function setResponder($client_psid, $responder_id) {
-        $client = Client::where('psid', $client_psid)->with('responder', 'status')->first();
+        $client = Client::where('psid', $client_psid)->first();
 
         $client->responder_id = $responder_id;
         $client->update();
 
-        return response()->json($client, 200);
+        return response()->json(Client::where('psid', $client_psid)->with('responder', 'client_status')->first(), 200);
     }
 
     // get data
     public function getData($client_mid, Request $request) {
         try {
-            $client = Client::where('mid', $client_mid)->with('responder', 'status')->first();
+            $client = Client::where('mid', $client_mid)->with('responder', 'client_status')->first();
 
             if (!$client->name) {
                 $client->name = $request->name;
@@ -99,7 +99,7 @@ class ClientController extends Controller {
     // get client
     public function getClient($client_mid) {
         try {
-            $client = Client::where('mid', $client_mid)->with('responder', 'status')->first();
+            $client = Client::where('mid', $client_mid)->with('responder', 'client_status')->first();
 
             return response()->json($client, 200);
         } catch (Exception $e) {
@@ -130,7 +130,7 @@ class ClientController extends Controller {
                 $query->where('status', $status_id);
             }
 
-            $result = $query->with('status', 'responder')->paginate(1);
+            $result = $query->with('client_status', 'responder')->paginate(1);
 
             return response()->json($result, 200);
         } catch (Exception $e) {

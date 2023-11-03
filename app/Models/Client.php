@@ -21,7 +21,7 @@ class Client extends Model {
         return $this->belongsTo(User::class, 'responder_id', 'id');
     }
 
-    public function status() {
+    public function client_status() {
         return $this->belongsTo(ClientStatus::class, 'status', 'id');
     }
 }
