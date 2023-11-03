@@ -85,12 +85,22 @@ class ClientController extends Controller {
                 $client->name = $request->name;
                 $client->update();
             }
+            $unread = 'no';
             if ($client->additional_information !== $request->info) {
+
+                if ($client->additional_information !== null) {
+                    $stored = json_decode($client->additional_information);
+                    $new = json_decode($request->info);
+                    $unread = $stored->snippet === $new->snippet ?  'no' : 'yes';
+                }
                 $client->additional_information = $request->info;
                 $client->update();
             }
 
-            return response()->json($client, 200);
+            return response()->json([
+                'client' => Client::where('mid', $client_mid)->with('responder', 'client_status')->first(),
+                'unread' => $unread
+            ], 200);
         } catch (Exception $e) {
             return response()->json($e, 500);
         }
