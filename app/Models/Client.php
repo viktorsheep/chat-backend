@@ -13,7 +13,8 @@ class Client extends Model {
         'mid',
         'psid',
         'responder_id',
-        'status'
+        'status',
+        'name'
     ];
 
     public function responder() {
