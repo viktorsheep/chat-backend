@@ -86,6 +86,17 @@ class ClientController extends Controller {
         return response()->json(Client::where('mid', $client_mid)->with('responder', 'client_status')->first(), 200);
     }
 
+    // update additional_information
+    public function updateAdditionalInformation($client_mid, Request $request) {
+        $client = Client::where('mid', $client_mid)->first();
+
+        $client->has_new_message = false;
+        $client->additional_information = $request->info;
+        $client->update();
+
+        return response()->json(Client::where('mid', $client_mid)->with('responder', 'client_status')->first(), 200);
+    }
+
     // get data
     public function getData($client_mid, Request $request) {
         try {
