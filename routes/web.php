@@ -59,7 +59,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('{client_mid}/getClient', 'ClientController@getClient');
         $router->get('{sender_id}/{page_id}/get', 'ClientController@getBySenderId');
 
-        $router->get('{status_id}/{responder_id}/{page_id}/get', 'ClientController@filteredData');
+        $router->get('{page_id}/filter', 'ClientController@filteredData');
     }); // e.o Set Client
 
     // Client Status

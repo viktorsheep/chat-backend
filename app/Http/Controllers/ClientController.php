@@ -149,19 +149,18 @@ class ClientController extends Controller {
     }
 
     // get by filteredData
-    public function filteredData($status_id, $responder_id, $page_id) {
+    public function filteredData($page_id, Request $request) {
         try {
 
             $query = Client::where('page_id', $page_id);
 
-            if ($responder_id !== '0') {
-                $query->where('responder_id', $responder_id);
+            if (!empty($request->responders)) {
+                $query->whereIn('responder_id', $request->responders);
             }
 
-            if ($status_id !== '0') {
-                $query->where('status', $status_id);
+            if (!empty($request->statuses)) {
+                $query->whereIn('status', $request->statuses);
             }
-
             $result = $query->with('client_status', 'responder')->paginate(1);
 
             return response()->json($result, 200);
