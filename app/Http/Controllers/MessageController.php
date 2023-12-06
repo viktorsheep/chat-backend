@@ -46,7 +46,7 @@ class MessageController extends Controller {
                 $af = file_get_contents(base_path('public') . DIRECTORY_SEPARATOR . 'asdf.webm');
                 $cv = base64_encode($af);
             } catch (Exception $e) {
-                return response()->json(['err' => $e->getMessage()], 500);
+                return response()->json($e->getMessage(), 500);
             }
 
             return response()->json(['blob' => $cv], 200);
@@ -140,7 +140,7 @@ class MessageController extends Controller {
             $response->headers->set('Cach-Control', 'no-cache');
             return $response;
         } catch (\Exception $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 

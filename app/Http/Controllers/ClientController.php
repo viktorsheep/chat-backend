@@ -48,7 +48,7 @@ class ClientController extends Controller {
                 return response()->json($client, 201);
             }
         } catch (Exception $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         }
     } // e.o set
 
@@ -62,7 +62,7 @@ class ClientController extends Controller {
 
             return response()->json(Client::where('mid', $client_mid)->with('responder', 'client_status')->first(), 200);
         } catch (\Exception $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 
@@ -124,7 +124,7 @@ class ClientController extends Controller {
                 200
             );
         } catch (Exception $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 
@@ -135,7 +135,7 @@ class ClientController extends Controller {
 
             return response()->json($client, 200);
         } catch (Exception $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 
@@ -144,7 +144,7 @@ class ClientController extends Controller {
         try {
             return response()->json(Client::where('psid', $sender_id)->where('page_id', $page_id)->first(), 200);
         } catch (Exception $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 
@@ -165,7 +165,7 @@ class ClientController extends Controller {
 
             return response()->json($result, 200);
         } catch (Exception $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 }

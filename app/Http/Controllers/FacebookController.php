@@ -43,18 +43,15 @@ class FacebookController extends Controller {
                         'fields' => 'unread_count,subject,snippet,senders,can_reply,message_count,updated_time,participants'
                     ]);
                 }
-            } catch (\Exception $e) {
-                return response()->json($response, 500);
+            } catch (Exception $e) {
+                return response()->json('Sorry, Facebook returned with an error when we tried to connect to them.', 500);
             }
 
             if ($response->failed()) {
                 $statusCode = $response->status();
                 $errorResponse = $response->json();
 
-                return response()->json([
-                    'error-response' => $errorResponse,
-                    'code' => $statusCode
-                ], 500);
+                return response()->json($errorResponse, 500);
             }
 
 
@@ -62,10 +59,7 @@ class FacebookController extends Controller {
                 $data = $response->json();
                 $conversations =  $data['data'];
             } catch (\Exception $e) {
-                return response()->json([
-                    'http-response-json' => $response->json(),
-                    'exception' => $e
-                ], 500);
+                return response()->json($e->getMessage(), 500);
             }
 
 
@@ -80,7 +74,7 @@ class FacebookController extends Controller {
 
             return response()->json(['conversations' => $conversations, 'next' => $next], 200);
         } catch (\Exception $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 
@@ -262,7 +256,7 @@ class FacebookController extends Controller {
                 'tag' => $tag
             ], 200);
         } catch (Exception $e) {
-            return response($e, 500);
+            return response($e->getMessage(), 500);
         }
     }
 }
