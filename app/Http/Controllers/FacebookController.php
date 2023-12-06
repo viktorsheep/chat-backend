@@ -20,42 +20,62 @@ class FacebookController extends Controller {
     }
 
     public function conversations($page_id, Request $request) {
-        $page = FbPage::where('page_id', $page_id)->first();
-        $accessToken = $page->access_token;
-        $limit = 25;
-        $getNext = $request->query('next');
+        try {
+            $page = FbPage::where('page_id', $page_id)->first();
+            $accessToken = $page->access_token;
+            $limit = 25;
+            $getNext = $request->query('next');
 
-        $url = "https://graph.facebook.com/v15.0/{$page_id}/conversations";
+            $url = "https://graph.facebook.com/v15.0/{$page_id}/conversations";
 
-        if ($getNext) {
-            $response = Http::get($url, [
-                'access_token' => $accessToken,
-                'limit' => $limit,
-                'fields' => 'unread_count,subject,snippet,senders,can_reply,message_count,updated_time,participants',
-                'after' => $getNext
-            ]);
-        } else {
-            $response = Http::get($url, [
-                'access_token' => $accessToken,
-                'limit' => $limit,
-                'fields' => 'unread_count,subject,snippet,senders,can_reply,message_count,updated_time,participants'
-            ]);
+            try {
+                if ($getNext) {
+                    $response = Http::get($url, [
+                        'access_token' => $accessToken,
+                        'limit' => $limit,
+                        'fields' => 'unread_count,subject,snippet,senders,can_reply,message_count,updated_time,participants',
+                        'after' => $getNext
+                    ]);
+                } else {
+                    $response = Http::get($url, [
+                        'access_token' => $accessToken,
+                        'limit' => $limit,
+                        'fields' => 'unread_count,subject,snippet,senders,can_reply,message_count,updated_time,participants'
+                    ]);
+                }
+            } catch (Exception $e) {
+                return response()->json('Sorry, Facebook returned with an error when we tried to connect to them.', 500);
+            }
+
+            if ($response->failed()) {
+                $statusCode = $response->status();
+                $errorResponse = $response->json();
+
+                return response()->json($errorResponse, 500);
+            }
+
+
+            try {
+                $data = $response->json();
+                $conversations =  $data['data'];
+            } catch (\Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+
+
+            $paging = $data['paging'] ?? null;
+            $url = $paging['next'] ?? null;
+
+            $next = null;
+            if ($url) {
+                $next = $paging['cursors']['after'];
+            }
+
+
+            return response()->json(['conversations' => $conversations, 'next' => $next], 200);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 500);
         }
-
-
-        $data = $response->json();
-        $conversations =  $data['data'];
-
-        $paging = $data['paging'] ?? null;
-        $url = $paging['next'] ?? null;
-
-        $next = null;
-        if ($url) {
-            $next = $paging['cursors']['after'];
-        }
-
-
-        return response()->json(['conversations' => $conversations, 'next' => $next], 200);
     }
 
     public function messages($page_id, $conversation_id, Request $request) {
@@ -236,7 +256,7 @@ class FacebookController extends Controller {
                 'tag' => $tag
             ], 200);
         } catch (Exception $e) {
-            return response($e, 500);
+            return response($e->getMessage(), 500);
         }
     }
 }

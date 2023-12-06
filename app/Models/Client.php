@@ -13,14 +13,16 @@ class Client extends Model {
         'mid',
         'psid',
         'responder_id',
-        'status'
+        'status',
+        'name',
+        'has_new_message'
     ];
 
     public function responder() {
         return $this->belongsTo(User::class, 'responder_id', 'id');
     }
 
-    public function status() {
+    public function client_status() {
         return $this->belongsTo(ClientStatus::class, 'status', 'id');
     }
 }
